@@ -181,6 +181,120 @@ begin
   readln();
 
 end.
+================================================================================================
+EJERCICIO 2
+================================================================================================
+
+
+program project1;
+Type
+tVehiculo= Record
+codigoVehiculo:integer;
+patente: String;
+#motor:String;
+cantidadPuertas: integer;
+precio:real;
+ descripcion:String
+end;
+tArchivo = File of tVehiculo;
+
+Procedure agregar (var f: tArchivo; vehiculo: tVehiculo);
+var
+   auxV = tVehiculo;
+begin
+    reset(f);
+
+    if (not eof (f)) then
+    begin
+         read(f,auxV);
+    end;
+
+    if (auxV.codigoVehiculo = 0) then
+    begin
+         while (not eof(f)) do
+         begin
+              read(f,auxV);
+         end;
+         write (f,vehiculo);
+    end
+    else
+    begin
+         seek(f,auxV.codigoVehiculo*-1);
+         read(f,auxV);
+         seek(f,filepos(f)-1);
+         write(f,vehiculo);
+         seek(f,0);
+         write(f,auxV);
+    end;
+
+
+
+    close (f);
+end;
+
+Procedure eliminar (var arch: tArchivo; codigoVehiculo: integer);
+var
+   auxV:tVehiculo;
+   pos : integer;
+begin
+    reset(f);
+    if(not eof(f)) then
+    begin
+         read(f,auxV);
+    end;
+
+    pos:=auxV.codigoVehiculo;
+
+    while(( auxV.codigoVehiculo <> codigoVehiculo) and (not eof (f))) do
+    begin
+         read(f,auxV);
+    end;
+
+    if( auxV.codigoVehiculo = codigoVehiculo)  then
+    begin
+         seek(f,filePos(f)-1);
+         auxV.codigoVehiculo:= pos;
+         pos:= filePos(f);
+         write(f,auxV);
+         seek(f,0);
+         auxV.codigoVehiculo:= pos;
+         write(f,auxV);
+    end;
+    close(f);
+end;
+procedure cargarArchivo( var f:tArchivo);
+var
+   auxV:tVehiculo;
+begin
+    auxV.codigoVehiculo:=1;
+    write(f,auxV);
+
+    auxV.codigoVehiculo:=2;
+    write(f,auxV);
+
+    auxV.codigoVehiculo:=3;
+    write(f,auxV);
+
+    auxV.codigoVehiculo:=4;
+    write(f,auxV);
+
+    auxV.codigoVehiculo:=5;
+    write(f,auxV);
+
+    auxV.codigoVehiculo:=6;
+    write(f,auxV);
+end;
+var
+   f: tArchivo;
+begin
+     rewrite(f);
+     cargarArchivo(f);
+
+
+
+end.
+
+
 
 =================================================================================================
 EJERCICIO 3
