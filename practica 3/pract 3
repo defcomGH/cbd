@@ -1,0 +1,766 @@
+EJERCICIO 1 
+==============================================================================================================================
+
+program Project1;
+type
+    planta = record
+      codigo:integer;
+      nombreV:String[50];
+      nombreC:String[50];
+      alturaPromedio: real;
+      descripcion: String[50];
+      zona:String[50];
+    end;
+archPlanta = file of planta;
+
+procedure cargarArchivo(var f: archPlanta);
+var
+  aux: planta;
+begin
+     reset(f);
+
+     aux.codigo:=1;
+     write(f,aux);
+     aux.codigo:=2;
+     write(f,aux);
+     aux.codigo:=3;
+     write(f,aux);
+     aux.codigo:=4;
+     write(f,aux);
+     aux.codigo:=5;
+     write(f,aux);
+     aux.codigo:=6;
+     write(f,aux);
+     aux.codigo:=7;
+     write(f,aux);
+     aux.codigo:=8;
+     write(f,aux);
+
+     close(f);
+
+end;
+
+procedure imprimirArchivo (var f: archPlanta );
+var
+  aux:planta;
+begin
+     reset(f);
+     while(not eof(f))do
+     begin
+         read(f,aux);
+         writeln(aux.codigo);
+     end;
+
+     close(f);
+end;
+
+procedure incisoA (var f1:archPlanta; var f2:archPlanta);
+var
+  aux:planta;
+  codigoBorrar: integer;
+begin
+
+     reset(f2);
+
+     readln(codigoBorrar);
+
+     while (codigoBorrar <> -1 ) do
+     begin
+           reset(f1);
+           aux.codigo:=-999;
+           while (( not eof(f1)) and (codigoBorrar <> aux.codigo))  do
+           begin
+                 read(f1,aux);
+           end;
+           if(codigoBorrar = aux.codigo) then
+           begin
+                seek(f1,filePos(f1) - 1);
+                aux.codigo:=-1;
+                write(f1,aux);
+           end;
+
+           readln(codigoBorrar);
+     end;
+
+     reset(f1);
+     imprimirArchivo(f1);
+
+     writeln('---------------------');
+
+     reset(f1);
+     reset(f2);
+
+     while (not eof(f1)) do
+     begin
+           read(f1,aux);
+           if(aux.codigo <> -1) then
+           begin
+                write(f2,aux);
+           end;
+     end;
+
+     reset(f2);
+     imprimirArchivo(f2);
+
+     close(f1);
+end;
+
+
+
+procedure incisoB (var f1: archPlanta);
+var
+  aux: planta;
+  codigoBorrar: integer;
+  auxPos: integer;
+begin
+     readln(codigoBorrar);
+     while(codigoBorrar <> -1 ) do
+     begin
+           reset(f1);
+           aux.codigo:=-999;
+           while((not eof(f1)) and (aux.codigo <> codigoBorrar)) do
+           begin
+                 read(f1,aux);
+           end;
+           if(aux.codigo = codigoBorrar)then
+           begin
+                if(not eof(f1)) then
+                begin
+                   auxPos:= filePos(f1) -1;
+                   seek(f1,fileSize(f1) -1 );
+                   read(f1,aux);
+                   seek(f1,fileSize(f1) -1 );
+                   truncate(f1);
+                   seek(f1,auxPos);
+                   write(f1,aux);
+                end
+                else
+                begin
+                     seek(f1,fileSize(f1) -1 );
+                     truncate(f1);
+
+                end;
+           end;
+
+
+
+           readln(codigoBorrar);
+     end;
+
+     close(f1);
+
+
+
+end;
+
+var
+  f1 : archPlanta;
+  f2: archPlanta;
+
+begin
+  assign(f1,'plantas');
+  rewrite(f1);
+  assign(f2,'plantas2');
+  rewrite(f2);
+
+
+  close(f1);
+  close(f2);
+
+  cargarArchivo(f1);
+  imprimirArchivo(f1);
+
+  writeln('---------------------');
+
+  incisoB(f1);
+
+  reset(f1);
+  imprimirArchivo(f1);
+
+
+  readln();
+
+end.
+
+=================================================================================================
+EJERCICIO 3
+=================================================================================================
+program project1;
+type
+  producto = record
+    codigo : integer;
+    nombre : string [50];
+    descripcion :string [50];
+    stock : integer;
+  end;
+
+  archivoProductos = file of producto;
+
+procedure volcarDatos(var f:archivoProductos; var t : text);
+var
+   aux: producto;
+begin
+    reset(f);
+    reset(t);
+
+     while ( not eof(t)) do
+     begin
+          readln(t,aux.codigo);
+          readln(t,aux.nombre);
+          readln(t,aux.descripcion);
+          readln(t,aux.stock);
+          write(f,aux);
+     end;
+      close(f);
+      close(t);
+end;
+procedure bajaLogica(var f:archivoProductos);
+var
+   aux:producto;
+   num: integer;
+begin
+     readln(num);
+     while(num <> -1 ) do
+     begin
+          reset(f);
+          aux.codigo:=-999;
+          while((not eof(f)) and (num <> aux.codigo)) do
+          begin
+               read(f,aux);
+          end;
+
+          if(num = aux.codigo) then
+          begin
+              aux.codigo:= -1;
+              seek(f,filepos(f) -1 );
+              write(f,aux);
+          end;
+          readln(num);
+
+     end;
+     close(f);
+end;
+procedure altaFisica (var f:archivoProductos);
+var
+   num : integer;
+   aux: producto;
+begin
+
+     readln(num);
+
+     while (num <> -1 ) do
+     begin
+           reset(f);
+           aux.codigo:=-999;
+           while((not eof(f)) and (aux.codigo <> -1)) do
+           begin
+                read(f,aux);
+           end;
+           if(aux.codigo = -1 ) then
+           begin
+               seek(f,filePos(f) -1 );
+           end;
+           aux.codigo:=num;
+           write(f,aux);
+           readln(num);
+     end;
+
+     close(f);
+
+end;
+
+procedure imprimirArchivo(var f : archivoProductos);
+var
+   aux: producto;
+begin
+     reset(f);
+
+     while(not eof(f)) do
+     begin
+          read(f,aux);
+          write(aux.codigo);
+          write ('   ');
+          write(aux.nombre);
+          write ('   ');
+          write(aux.descripcion);
+          write ('   ');
+          write(aux.stock);
+          writeln ('   ');
+
+     end;
+     close(f);
+end;
+
+procedure bajaListaInvertida (var f: archivoProductos);
+var
+   aux: producto;
+   pos: integer;
+   num: integer;
+
+begin
+     readln(num);
+
+     while(num <> -1) do
+     begin
+          reset(f);
+          if(not eof(f)) then
+          begin
+              read(f,aux);
+              pos:= aux.codigo;
+          end;
+          while(( not eof(f)) and ((aux.codigo <> num))) do read(f,aux);
+          if(aux.codigo = num) then
+          begin
+               seek(f,filePos(f) -1 );
+               aux.codigo:=pos;
+               write(f,aux);
+               aux.codigo:= (filePos(f) -1)*-1;
+               seek(f,0);
+               write(f,aux);
+          end;
+          readln(num);
+     end;
+
+
+end;
+
+procedure altaListaInvertida (var f:archivoProductos; nuevo: producto);
+var
+   aux : producto;
+   pos : integer;
+begin
+     reset(f);
+     if (not eof(f)) then
+     begin
+          read(f,aux);
+          if( aux.codigo = 0 ) then
+          begin
+               seek(f,fileSize(f));
+               write(f,nuevo);
+          end
+          else
+          begin
+               seek(f,aux.codigo*-1);
+               read(f,aux);
+               seek(f,filePos(f) - 1);
+               write(f,nuevo);
+               seek(f,0);
+               write(f,aux);
+          end;
+     end;
+     close(f);
+end;
+
+var
+  f1: archivoProductos;
+  t1 : text;
+  num: integer;
+  aux : producto;
+
+begin
+
+     assign(f1,'productos');
+     rewrite(f1);
+
+
+     assign(t1,'productosTexto.txt');
+     reset(t1);
+
+     close(f1);
+     close(t1);
+
+     volcarDatos(f1,t1);
+     imprimirArchivo(f1);
+
+
+     bajaListaInvertida(f1);
+     imprimirArchivo(f1);
+
+
+     readln(num);
+     while(  num <> -1 ) do
+     begin
+           aux.codigo:=num ;
+           altaListaInvertida(f1,aux);
+           imprimirArchivo(f1);
+           readln(num);
+     end;
+
+
+     readln();
+
+end.
+
+==================================================================================================
+EJERCICIO 4 
+
+==================================================================================================
+
+program project1;
+type
+  producto = record
+    codigo : integer;
+    nombre : string [50];
+    descripcion :string [50];
+    stock : integer;
+  end;
+
+  archivoProductos = file of producto;
+
+procedure volcarDatos(var f:archivoProductos; var t : text);
+var
+   aux: producto;
+begin
+    reset(f);
+    reset(t);
+
+     while ( not eof(t)) do
+     begin
+          readln(t,aux.codigo);
+          readln(t,aux.nombre);
+          readln(t,aux.descripcion);
+          readln(t,aux.stock);
+          write(f,aux);
+     end;
+      close(f);
+      close(t);
+end;
+procedure bajaLogica(var f:archivoProductos);
+var
+   aux:producto;
+   num: integer;
+begin
+     readln(num);
+     while(num <> -1 ) do
+     begin
+          reset(f);
+          aux.codigo:=-999;
+          while((not eof(f)) and (num <> aux.codigo)) do
+          begin
+               read(f,aux);
+          end;
+
+          if(num = aux.codigo) then
+          begin
+              aux.codigo:= -1;
+              seek(f,filepos(f) -1 );
+              write(f,aux);
+          end;
+          readln(num);
+
+     end;
+     close(f);
+end;
+procedure altaFisica (var f:archivoProductos);
+var
+   num : integer;
+   aux: producto;
+begin
+
+     readln(num);
+
+     while (num <> -1 ) do
+     begin
+           reset(f);
+           aux.codigo:=-999;
+           while((not eof(f)) and (aux.codigo <> -1)) do
+           begin
+                read(f,aux);
+           end;
+           if(aux.codigo = -1 ) then
+           begin
+               seek(f,filePos(f) -1 );
+           end;
+           aux.codigo:=num;
+           write(f,aux);
+           readln(num);
+     end;
+
+     close(f);
+
+end;
+
+procedure imprimirArchivo(var f : archivoProductos);
+var
+   aux: producto;
+begin
+     reset(f);
+
+     while(not eof(f)) do
+     begin
+          read(f,aux);
+          write(aux.codigo);
+          write ('   ');
+          write(aux.nombre);
+          write ('   ');
+          write(aux.descripcion);
+          write ('   ');
+          write(aux.stock);
+          writeln ('   ');
+
+     end;
+     close(f);
+end;
+
+procedure bajaListaInvertida (var f: archivoProductos);
+var
+   aux: producto;
+   pos: integer;
+   num: integer;
+
+begin
+     readln(num);
+
+     while(num <> -1) do
+     begin
+          reset(f);
+          if(not eof(f)) then
+          begin
+              read(f,aux);
+              pos:= aux.codigo;
+          end;
+          while(( not eof(f)) and ((aux.codigo <> num))) do read(f,aux);
+          if(aux.codigo = num) then
+          begin
+               seek(f,filePos(f) -1 );
+               aux.codigo:=pos;
+               write(f,aux);
+               aux.codigo:= (filePos(f) -1)*-1;
+               seek(f,0);
+               write(f,aux);
+          end;
+          readln(num);
+     end;
+
+
+end;
+
+procedure altaListaInvertida (var f:archivoProductos; nuevo: producto);
+var
+   aux : producto;
+   pos : integer;
+begin
+     reset(f);
+     if (not eof(f)) then
+     begin
+          read(f,aux);
+          if( aux.codigo = 0 ) then
+          begin
+               seek(f,fileSize(f));
+               write(f,nuevo);
+          end
+          else
+          begin
+               seek(f,aux.codigo*-1);
+               read(f,aux);
+               seek(f,filePos(f) - 1);
+               write(f,nuevo);
+               seek(f,0);
+               write(f,aux);
+          end;
+     end;
+     close(f);
+end;
+
+var
+  f1: archivoProductos;
+  t1 : text;
+  num: integer;
+  aux : producto;
+
+begin
+
+     assign(f1,'productos');
+     rewrite(f1);
+
+
+     assign(t1,'productosTexto.txt');
+     reset(t1);
+
+     close(f1);
+     close(t1);
+
+     volcarDatos(f1,t1);
+     imprimirArchivo(f1);
+
+
+     bajaListaInvertida(f1);
+     imprimirArchivo(f1);
+
+
+     readln(num);
+     while(  num <> -1 ) do
+     begin
+           aux.codigo:=num ;
+           altaListaInvertida(f1,aux);
+           imprimirArchivo(f1);
+           readln(num);
+     end;
+
+
+     readln();
+
+end.         
+
+
+
+=====================================================================
+EJERCICIO  5 
+=====================================================================
+
+
+program pract3eEjer5;
+type
+articulo=record
+codigo :integer;
+descripcion : String[50];
+color : String[50];
+talle : integer;
+stock : integer;
+precio : real;
+end;
+ArchArticulos = file of articulo;
+procedure cargarArchivoArticulos(var f:ArchArticulos);
+var
+  aux:articulo;
+begin
+     reset(f);
+
+     aux.codigo:=1;
+     write(f,aux);
+
+     aux.codigo:=2;
+     write(f,aux);
+
+     aux.codigo:=3;
+     write(f,aux);
+
+     aux.codigo:=4;
+     write(f,aux);
+
+     aux.codigo:=5;
+     write(f,aux);
+
+     aux.codigo:=6;
+     write(f,aux);
+
+     aux.codigo:=7;
+     write(f,aux);
+
+     aux.codigo:=8;
+     write(f,aux);
+
+     aux.codigo:=9;
+     write(f,aux);
+
+     close(f);
+
+end;
+procedure imprimirArchivo(var f:ArchArticulos);
+var
+  aux:articulo;
+begin
+     reset(f);
+
+     while (not eof(f)) do
+     begin
+          read(f,aux);
+          writeln(aux.codigo);
+     end;
+     close(f);
+end;
+procedure bajaLogica(var f:ArchArticulos ; var t:text);
+var
+  aux: articulo;
+  auxCod : integer;
+begin
+
+     rewrite(t);
+
+     readln(auxCod);
+
+     while(auxCod <> -1) do
+     begin
+          aux.codigo := -99999;
+          reset(f);
+          while((not eof (f)) and (aux.codigo <> auxcod)) do
+          begin
+                 read(f,aux);
+          end;
+          if(aux.codigo = auxcod ) then
+          begin
+               writeln(t,aux.codigo);
+               aux.codigo:= aux.codigo*-1;
+               seek(f,filepos(f) -1);
+               write(f,aux);
+          end;
+
+          readln(auxCod);
+          close(f);
+     end;
+
+     close(t);
+
+
+end;
+procedure compactarArchivo(var f1: ArchArticulos);
+var
+  aux:articulo;
+  f2: ArchArticulos;
+begin
+     reset(f1);
+     assign(f2,'x');
+     rewrite(f2);
+
+     while(not eof(f1)) do
+     begin
+           read(f1,aux);
+           if(aux.codigo >= 0 ) then write(f2,aux);
+     end;
+
+     close(f1);   //necesito cerrar los archivos para poder eliminarlos o renombrarlos
+     close(f2);
+
+     erase(f1);
+     rename(f2,'maestroer');
+     f1 := f2;
+
+
+end;
+
+var
+  f : ArchArticulos;
+  t : text;
+begin
+  assign(f,'maestro');
+  assign(t,'texto.txt');
+
+  rewrite(f);
+
+
+  close(f);
+
+
+  cargarArchivoArticulos (f);
+  imprimirArchivo(f);
+
+   writeln('----------');
+
+  bajaLogica(f,t);
+
+  writeln('----------');
+
+  imprimirArchivo(f);
+
+  writeln('----------');
+
+  compactarArchivo(f);
+
+  imprimirArchivo(f);
+
+
+
+  readln();
+end.
+
+
