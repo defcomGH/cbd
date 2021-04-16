@@ -299,6 +299,26 @@ end.
 =================================================================================================
 EJERCICIO 3
 =================================================================================================
+
+para este ejercicio tenes que crear un archivo de texto llamado productosTexto al cual le vas a poner lo siguiente
+
+0                    //codigo
+papel                   // nombre
+papelxd                     //descripcion
+34                              //stock
+2                        //y vuelve a empezar con otro codigo de otro producto
+papa
+papoide
+10
+3
+caca
+cacoide
+444
+4
+puerta
+puertaxd
+5
+
 program project1;
 type
   producto = record
